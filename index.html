@@ -1,0 +1,173 @@
+<html>
+	<!-- Facebook Pixel Code -->
+<script>
+	!function(f,b,e,v,n,t,s)
+	{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+	n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+	if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+	n.queue=[];t=b.createElement(e);t.async=!0;
+	t.src=v;s=b.getElementsByTagName(e)[0];
+	s.parentNode.insertBefore(t,s)}(window, document,'script',
+	'https://connect.facebook.net/en_US/fbevents.js');
+	fbq('init', '813817599303809');
+	fbq('track', 'PageView');
+	</script>
+	<noscript><img height="1" width="1" style="display:none"
+	src="https://www.facebook.com/tr?id=813817599303809&ev=PageView&noscript=1"
+	/></noscript>
+	<!-- End Facebook Pixel Code -->
+	<style>
+		.div-tag2 {
+			background-color: white;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 2px;
+			box-shadow: 1px 1px 1px 1px #ccc;
+			width: 40%;
+			margin:auto;
+			font-family: 'Roboto';
+			margin-bottom: 10px;
+		}
+		#button2  {
+			font-weight: bold;
+			background-color: #1a73e8;
+			color: #fff;
+			padding: 8px;
+			border-radius: 3px;
+			border: 1px solid #1a73e8;			
+		}
+		#button2:focus  {
+			outline: none;
+		}
+		.demo li{
+			margin: 5px;
+			padding: 5px;
+			white-space: pre;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			box-shadow: 1px 1px 1px #ccc;
+		}
+		.demo li p{
+			margin: 0;
+			display: inline-block;
+			white-space: normal;
+		}
+	</style>
+	<body>
+		<div class="div-tag2">
+			<div style="display: flex; justify-content: space-between;">
+				<input id="urlInput" style="width: 50%;" type="text" placeholder="Enter URL"/>
+				<button id="button2" onclick="myFunction()">List all Items</button> 
+				<button id="button3" onclick="myFunction1()">Get Tracking Results</button> 
+			</div>
+			<div id="demo" class="demo">
+				<p> Results :</p>
+			</div>
+		</div>
+		<div class="div-tag2">
+			<div class="demo second-class third-class">
+				<div style="margin:auto;width: 30%">Tracking Results</div>
+				<div id="results"></div>				
+			</div>
+		</div>
+	<body>
+	<script>
+		function myFunction1() {
+			fbq('track', 'Purchase', {currency: "USD", value: 30.00});
+		  console.log('console');
+		  $.ajax({url: "http://localhost/owa/owa/api/index.php?owa_metrics=visits%2CpagesPerVisit%2CvisitDuration%2CbounceRate%2CuniqueVisitors&owa_dimensions=browserType%2CipAddress&owa_period=last_seven_days&owa_siteId=640af392c81dd0991679410c67800a36&owa_sort=visits-&owa_do=reports&owa_module=base&owa_version=v1&owa_format=json&owa_resultsPerPage=25&", success: function(result){
+			let resultsDiv = document.querySelector('#results');
+			let list = document.createElement('ul');
+			let LI = document.createElement('div');
+			LI.innerHTML = 'Total Visits: ' + result.data.aggregates.visits.value;
+			resultsDiv.appendChild(LI);
+			let brk = document.createElement('div');
+			brk.innerHTML = 'Visits Breakdown by BrowserType';
+			resultsDiv.appendChild(brk);
+			let LI2 = document.createElement('li');
+			LI2.innerHTML = 'Browser: ' + result.data.rows[0].browserType + '\nIP Address: ' + result.data.rows[0].ipAddress + '\nVisits: ' + result.data.rows[0].visits;
+			list.appendChild(LI2);
+			let LI3 = document.createElement('li');
+			LI3.innerHTML = 'Browser: ' + result.data.rows[1].browserType + '\nIP Address: ' + result.data.rows[1].ipAddress + '\nVisits: ' + result.data.rows[1].visits;
+			list.appendChild(LI3);
+			resultsDiv.appendChild(list);
+			nextCall();
+		  }});
+		}
+		function nextCall() {
+			$.ajax({url: "http://localhost/owa/owa/api/index.php?owa_metrics=domClicks&owa_dimensions=domElementTag%2CdomElementId&owa_period=last_seven_days&owa_constraints=pageUrl%3D%3Dhttp%3A%2F%2Flocalhost%2Fowa&owa_siteId=640af392c81dd0991679410c67800a36&owa_sort=domClicks-&owa_do=reports&owa_module=base&owa_version=v1&owa_format=json&owa_resultsPerPage=5&", success: function(result){
+			console.log('in next call',result);
+			let resultsDiv = document.querySelector('#results');
+			let list = document.createElement('ul');
+			let LI = document.createElement('div');
+			LI.innerHTML = 'Total Clicks: ' + result.data.aggregates.domClicks.value;
+			resultsDiv.appendChild(LI);
+			let brk = document.createElement('div');
+			brk.innerHTML = 'Clicks Breakdown';
+			resultsDiv.appendChild(brk);
+			for(let row of result.data.rows) {
+				console.log(row);
+				let LI2 = document.createElement('li');
+				LI2.innerHTML = 'Tag: ' + row.domElementTag + '\nId: ' + row.domElementId + '\nClicks: ' + row.domClicks;
+				list.appendChild(LI2);	
+			}
+			resultsDiv.appendChild(list);
+		  	}});
+		}
+		function loadSource(url){
+			console.log('in load source: ' , url);
+			$.getJSON('https://api.allorigins.win/get?url=' + encodeURIComponent(url), function (data) {
+                      console.log(data);
+					  var parser = new DOMParser();
+					  var htmlDoc = parser.parseFromString(data.contents, 'text/html');
+					  console.log(htmlDoc)
+					  
+					  let demoDiv = document.querySelector('#demo');
+					  let list = document.createElement('ul');
+					  let allItems = htmlDoc.querySelectorAll('input.a-button-input');
+					  let allNavLinks = htmlDoc.querySelectorAll('button.a-button-text');
+					  console.log(allItems);
+					  allNavLinks.forEach(el => {
+						console.log('allnavlinks');
+							let LI = document.createElement('li');
+							LI.innerHTML = 'Element :<b>' + el.localName + '</b>\nWith id: ' + el.id + '\nAnd Text: <p>' + el.innerText + '</p>';
+							list.appendChild(LI);
+					  });
+					  allItems.forEach(el => {
+						  console.log('allItems');
+							let LI = document.createElement('li');
+							LI.innerHTML = 'Element :<b>' + el.localName + '</b>\nWith id: ' + el.id + '\nAnd Text: <p>' + el.title + '</p>';
+							list.appendChild(LI);
+					  });
+					  demoDiv.appendChild(list);
+                  });
+		}
+	</script>	
+<!-- Start Open Web Analytics Tracker -->
+<script type="text/javascript">
+//<![CDATA[
+var owa_baseUrl = 'http://localhost/owa/owa/';
+var owa_cmds = owa_cmds || [];
+owa_cmds.push(['setSiteId', '640af392c81dd0991679410c67800a36']);
+owa_cmds.push(['trackPageView']);
+owa_cmds.push(['trackClicks']);
+owa_cmds.push(['trackDomStream']);
+
+(function() {
+    var _owa = document.createElement('script'); _owa.type = 'text/javascript'; _owa.async = true;
+    owa_baseUrl = ('https:' == document.location.protocol ? window.owa_baseSecUrl || owa_baseUrl.replace(/http:/, 'https:') : owa_baseUrl );
+    _owa.src = owa_baseUrl + 'modules/base/js/owa.tracker-combined-min.js';
+    var _owa_s = document.getElementsByTagName('script')[0]; _owa_s.parentNode.insertBefore(_owa, _owa_s);
+}());
+
+document.addEventListener('click', function(event) {
+	console.log(event.target.id);
+	if(event.target.id == 'list')  {
+		owa_cmds.push(['trackAction', 'Clicks', 'List', 'Page1Button2']);
+	}
+});
+//]]>
+</script>
+<!-- End Open Web Analytics Code -->	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+</html>
